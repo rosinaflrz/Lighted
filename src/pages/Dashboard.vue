@@ -12,7 +12,6 @@ function goToLanding() {
   router.push('/dashboard-landing');
 }
 
-// ===== 🚀 FUNCIÓN DE LOGOUT MOVIDA AQUÍ 🚀 =====
 function onLogout() {
   // Aquí borrarías el token/session
   console.log('Logging out...');
@@ -86,8 +85,6 @@ function onLogout() {
   width: 280px;
   padding: 40px;
   background-color: #fff;
-
-  /* ===== 🚀 CAMBIOS PARA POSICIONAR EL BOTÓN 🚀 ===== */
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Empuja el botón hacia abajo */
@@ -144,7 +141,6 @@ function onLogout() {
   background-color: #e5e7eb;
 }
 
-/* ===== 🚀 ESTILOS PARA EL NUEVO BOTÓN 🚀 ===== */
 .logout-btn {
   padding: 12px 16px;
   font-size: 18px;

@@ -94,7 +94,7 @@ const onSubmit = async () => {
 </template>
 
 <style scoped>
-/* ===== Vars para nudge del ring si tu PNG tiene padding asimétrico */
+
 .signup { --ring-offset-x: 0px; --ring-offset-y: 0px; }
 
 .signup {
@@ -107,7 +107,6 @@ const onSubmit = async () => {
   padding: 24px;
 }
 
-/* Fondo: centrado y escala hacia afuera */
 .bg {
   position: absolute;
   top: 50%; left: 50%;

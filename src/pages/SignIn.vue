@@ -135,7 +135,6 @@ function signInMock() {
   padding: 24px;
 }
 
-/* Fondo siempre centrado y escalado hacia afuera */
 .signin-bg {
   position: absolute;
   top: 50%;

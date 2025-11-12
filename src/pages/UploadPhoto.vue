@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 function goToEditor() {
-  // ===== 🚀 ESTA ES LA RUTA CORRECTA 🚀 =====
   router.push('/edit-photo');
 }
 </script>

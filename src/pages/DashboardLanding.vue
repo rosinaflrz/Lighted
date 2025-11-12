@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Importaciones de Vue (hemos añadido más)
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from 'vue-router'; // Importa el router
 
@@ -8,11 +7,9 @@ import logo from "../assets/3.png";
 import cameraHand from "../assets/2.png";
 const bgUrl = new URL("../assets/7.png", import.meta.url).href;
 
-// ===== 🚀 NUEVAS IMÁGENES 🚀 =====
 import image10 from "../assets/10.png"; // Skydiver derecha
 import image11 from "../assets/11.png"; // Slider Antes (Térmica)
 import image13 from "../assets/13.png"; // Slider Después (Normal)
-// ===================================
 
 const router = useRouter(); // Inicializa el router
 const userName = ref("rosina"); // <-- 🚀 CAMBIO REALIZADO AQUÍ
@@ -22,9 +19,6 @@ function onLogout() {
   router.push('/signin'); // Navega a SignIn
 }
 
-// ==============================================
-// ===== 🚀 LÓGICA PARA EL SLIDER 🚀 =====
-// ==============================================
 const sliderContainer = ref<HTMLDivElement | null>(null);
 const containerWidth = ref(0);
 const isDragging = ref(false);
@@ -40,7 +34,6 @@ function startDrag(event: MouseEvent | TouchEvent) {
   }
 }
 
-// Función durante el arrastre
 function onDrag(event: MouseEvent | TouchEvent) {
   if (!isDragging.value || !sliderContainer.value) return;
 
@@ -64,7 +57,6 @@ function stopDrag() {
   isDragging.value = false;
 }
 
-// Añadir y quitar listeners globales
 onMounted(() => {
   // Asignar el ancho del contenedor una vez que esté montado
   if (sliderContainer.value) {
@@ -85,9 +77,7 @@ onUnmounted(() => {
   window.removeEventListener("mouseup", stopDrag);
   window.removeEventListener("touchend", stopDrag);
 });
-// ==============================================
-// ===== 🚀 FIN DE LA LÓGICA DEL SLIDER 🚀 =====
-// ==============================================
+
 </script>
 
 <template>
@@ -149,7 +139,6 @@ onUnmounted(() => {
 <style scoped>
 :global(:root) { --grid: 80px; }
 
-/* ===== PAGE (fondo siempre bien) ===== */
 .page {
   position: relative;
   min-height: 100vh;
@@ -162,7 +151,6 @@ onUnmounted(() => {
   image-rendering: crisp-edges;
 }
 
-/* ===== GRID ROJO (ocúltalo si estorba) ===== */
 /* ===== GRID ROJO ===== */
 .grid-overlay {
   position: fixed;
@@ -332,10 +320,6 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* =================================== */
-/* ===== 🚀 ESTILOS NUEVOS 🚀 ===== */
-/* =================================== */
-
 /* ----- Imagen Skydiver (Derecha) ----- */
 .skydiver-image {
   position: absolute;
@@ -424,11 +408,6 @@ onUnmounted(() => {
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
-
-/* =================================== */
-/* ===== 🚀 RESPONSIVE NUEVO 🚀 ===== */
-/* =================================== */
-
 /* ===== TABLET ===== */
 @media (min-width: 981px) and (max-width: 1200px) {
   .camera-hand { top: 400px; left: -80px; width: 480px; }
@@ -452,16 +431,15 @@ onUnmounted(() => {
   .camera-hand { top: 250px; left: -20px; width: 280px; }
   .main-title { top: 244px; left: auto; right: 24px; font-size: 32px; max-width: 55%; text-align: right; }
 
-  /* Ocultar o reubicar nuevos elementos en móvil */
   .skydiver-image {
     top: 450px;
     right: 24px;
-    width: 45%; /* Hacerlo fluido */
+    width: 45%; 
   }
   .comparison-slider {
     top: 450px;
     left: 24px;
-    width: 45%; /* Hacerlo fluido */
+    width: 45%; 
   }
 }
 </style>

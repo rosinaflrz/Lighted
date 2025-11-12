@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-// ===== 🚀 IMAGENES HARDCODEADAS 🚀 =====
+
 import logo from '../assets/3.png'; // <-- AÑADIDO: Importa el logo
 import image10 from '../assets/10.png';
 
@@ -12,7 +12,6 @@ const imageDisplayUrl = ref(image10);
 const thumbnailDisplayUrl = ref(image10);
 
 function onExit() {
-  // ===== 🚀 RUTA ACTUALIZADA 🚀 =====
   router.push('/dashboard/edit'); // Te lleva de vuelta a Upload Photo
 }
 
@@ -87,7 +86,6 @@ function onDownload() {
 </template>
 
 <style scoped>
-/* Nuevo contenedor principal para la página independiente */
 .edit-page-standalone {
   display: flex;
   flex-direction: column; /* Organiza logo, logout y el layout de edición */
@@ -125,20 +123,12 @@ function onDownload() {
 }
 
 
-/* El resto del estilo es similar al anterior, pero ahora el .edit-layout
-   ocupará el espacio restante después del logo y el botón de logout.
-   Ajusta los padding y margenes si es necesario para que el layout
-   no choque con el logo y el botón de logout. */
-
 .edit-layout {
   display: flex;
   flex-grow: 1; /* Para que ocupe el espacio restante */
   padding-top: 100px; /* Ajusta este valor para dar espacio al logo/logout */
 }
 
-/* ======================= */
-/* ===== ÁREA DE IMAGEN ===== */
-/* ======================= */
 .image-area {
   flex-grow: 1;
   display: flex;
@@ -175,9 +165,6 @@ function onDownload() {
   background-color: #f8e1e1;
 }
 
-/* ======================= */
-/* ===== SIDEBAR DERECHO ===== */
-/* ======================= */
 .edit-sidebar {
   width: 280px;
   flex-shrink: 0;
@@ -275,9 +262,7 @@ function onDownload() {
   background-color: #599071;
 }
 
-/* ======================= */
-/* ===== RESPONSIVE ===== */
-/* ======================= */
+
 @media (max-width: 1200px) {
   .logo-standalone {
     top: 20px;
@@ -290,18 +275,18 @@ function onDownload() {
     padding: 10px 20px;
   }
   .edit-layout {
-    flex-direction: column; /* En pantallas pequeñas, el sidebar se pone debajo */
-    padding-top: 80px; /* Ajusta para el logo/logout */
+    flex-direction: column; 
+    padding-top: 80px; 
   }
   .image-area {
     padding: 20px;
-    height: 60vh; /* Que ocupe más espacio vertical */
+    height: 60vh; 
   }
   .edit-sidebar {
-    width: 100%; /* Ocupa todo el ancho */
+    width: 100%;
     padding: 20px;
-    border-left: none; /* Elimina borde izquierdo */
-    border-top: 1px solid rgba(255, 255, 255, 0.5); /* Añade borde superior */
+    border-left: none; 
+    border-top: 1px solid rgba(255, 255, 255, 0.5); 
   }
   .exit-btn {
     bottom: 20px;
