@@ -1,7 +1,13 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
 
-import './assets/main.css'
+import './assets/main.css';
+import { vAutofocus } from './directives/autofocus';
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App);
+
+app.use(router);
+app.directive('autofocus', vAutofocus);
+
+app.mount('#app');

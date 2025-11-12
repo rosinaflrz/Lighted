@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, computed } from 'vue'
-import bg from '../assets/8.png'
+import bg from '../assets/9.png'
 import ring from '../assets/6.png'
 
 type Form = {

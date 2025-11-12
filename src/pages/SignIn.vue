@@ -1,52 +1,45 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import bg from '../assets/8.png'
-import ring from '../assets/6.png'
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import bg from '../assets/8.png';
+import ring from '../assets/6.png';
+import { authService } from '../services/auth';
 
-type Step = 'email' | 'password'
+type Step = 'email' | 'password';
 
-const router = useRouter()
+const router = useRouter();
 
 // --- State ---
-const step = ref<Step>('email')
-const email = ref('')
-const password = ref('')
-
-// focus refs
-const emailInput = ref<HTMLInputElement | null>(null)
-const passInput = ref<HTMLInputElement | null>(null)
+const step = ref<Step>('email');
+const email = ref('');
+const password = ref('');
 
 // --- Validaciones muy simples ---
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const emailValid = computed(() => emailRegex.test(email.value.trim()))
-const canContinueEmail = computed(() => emailValid.value)
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailValid = computed(() => emailRegex.test(email.value.trim()));
+const canContinueEmail = computed(() => emailValid.value);
 
-const passValid = computed(() => password.value.trim().length >= 8)
-const canContinuePass = computed(() => passValid.value)
+const passValid = computed(() => password.value.trim().length >= 8);
+const canContinuePass = computed(() => passValid.value);
 
 // --- Acciones ---
 function continueWithEmail() {
-  if (!canContinueEmail.value) return
-  step.value = 'password'
-  // foco en password en el próximo tick
-  requestAnimationFrame(() => passInput.value?.focus())
+  if (!canContinueEmail.value) return;
+  step.value = 'password';
 }
 
 function backToEmail() {
-  step.value = 'email'
-  requestAnimationFrame(() => emailInput.value?.focus())
+  step.value = 'email';
 }
 
 function signInMock() {
-  if (!canContinuePass.value) return
-  ;(window as any).$toast?.show?.('Signed in (mock) ✅')
-  router.push('/dashboardlanding')
+  if (!canContinuePass.value) return;
+  // Guardamos "sesión" fake en localStorage
+  authService.login(email.value);
+  // Mensaje mock (si quieres lo puedes quitar)
+  // ;(window as any).$toast?.show?.('Signed in (mock) ✅');
+  router.push('/dashboard-landing');
 }
-
-onMounted(() => {
-  emailInput.value?.focus()
-})
 </script>
 
 <template>
@@ -58,7 +51,6 @@ onMounted(() => {
       <!-- Logo -->
       <div class="logo">
         <div class="logo-circle">
-          <!-- Ring centrado real con absolute + translate -->
           <img class="logo-ring" :src="ring" alt="Lighted logo" />
         </div>
       </div>
@@ -69,7 +61,7 @@ onMounted(() => {
         <!-- Paso 1: email -->
         <template v-if="step === 'email'">
           <input
-            ref="emailInput"
+            v-autofocus
             type="email"
             placeholder="your_email@here.com"
             v-model.trim="email"
@@ -100,7 +92,7 @@ onMounted(() => {
           </div>
 
           <input
-            ref="passInput"
+            v-autofocus
             type="password"
             placeholder="password (8+ chars)"
             v-model="password"
@@ -173,27 +165,33 @@ onMounted(() => {
 }
 
 /* ---- Logo ---- */
-.logo { display: flex; justify-content: center; }
+.logo {
+  display: flex;
+  justify-content: center;
+}
 .logo-circle {
   width: 140px;
   height: 140px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   position: relative;
   overflow: visible;
   box-shadow:
-    0 0 18px rgba(255,255,255,0.9),
-    0 0 42px rgba(255,255,255,0.55),
-    0 0 68px rgba(255,255,255,0.35),
-    0 12px 32px rgba(0,0,0,.10),
-    0 0 0 1px rgba(255,255,255,0.75) inset;
+    0 0 18px rgba(255, 255, 255, 0.9),
+    0 0 42px rgba(255, 255, 255, 0.55),
+    0 0 68px rgba(255, 255, 255, 0.35),
+    0 12px 32px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.75) inset;
 }
-/* Ring (grande y centrado) */
-.logo-ring{
-  position:absolute;
-  left:50%; top:50%;
-  transform:translate(calc(-50% + var(--ring-offset-x)), calc(-50% + var(--ring-offset-y)));
-  width:270px; height:auto; object-fit:contain; pointer-events:none;
+.logo-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(calc(-50% + var(--ring-offset-x)), calc(-50% + var(--ring-offset-y)));
+  width: 270px;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 /* ---- Título ---- */
@@ -206,7 +204,10 @@ h1 {
 }
 
 /* ---- Form ---- */
-.form { display: grid; gap: 14px; }
+.form {
+  display: grid;
+  gap: 14px;
+}
 
 .form input {
   border: 1px solid #e5e7eb;
@@ -216,7 +217,9 @@ h1 {
   background: #fff;
   outline: none;
 }
-.form input::placeholder { color: #9ca3af; }
+.form input::placeholder {
+  color: #9ca3af;
+}
 
 .form button {
   border-radius: 999px;
@@ -228,9 +231,11 @@ h1 {
   transition: 0.25s ease;
   border: 1px solid #111;
 }
-.form button:hover { background: #000; }
+.form button:hover {
+  background: #000;
+}
 .form button.disabled {
-  opacity: .45;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -260,6 +265,14 @@ h1 {
 }
 
 /* Hint */
-.hint { text-align: center; margin-top: 8px; font-size: 14px; color: #111827; }
-.hint a { font-weight: 700; text-decoration: underline; }
+.hint {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #111827;
+}
+.hint a {
+  font-weight: 700;
+  text-decoration: underline;
+}
 </style>
