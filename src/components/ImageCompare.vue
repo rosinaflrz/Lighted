@@ -6,7 +6,6 @@ type Props = {
   afterSrc: string
   altBefore?: string
   altAfter?: string
-  /** porcentaje inicial (0–100). default 50 */
   initial?: number
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -16,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const root = ref<HTMLElement | null>(null)
-const split = ref(props.initial) // 0..100
+const split = ref(props.initial) 
 let dragging = false
 
 function setSplitFromClientX(x: number) {
@@ -49,7 +48,6 @@ function onPointerUp() {
 }
 
 function onKey(e: KeyboardEvent) {
-  // Accesible con teclado (izq/der)
   if (e.key === 'ArrowLeft') split.value = Math.max(0, split.value - 2)
   if (e.key === 'ArrowRight') split.value = Math.min(100, split.value + 2)
 }
@@ -79,10 +77,8 @@ onBeforeUnmount(() => {
     <img class="img before" :src="beforeSrc" :alt="altBefore" draggable="false" />
     <img class="img after"  :src="afterSrc"  :alt="altAfter"  draggable="false" />
 
-    <!-- máscara del after -->
     <div class="mask" aria-hidden="true" />
 
-    <!-- divisor -->
     <button
       class="divider"
       type="button"
@@ -108,7 +104,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 12px 24px rgba(0,0,0,.08);
 }
 
-/* imágenes apiladas */
 .img{
   position: absolute;
   inset: 0;
@@ -119,34 +114,25 @@ onBeforeUnmount(() => {
 .before{ z-index: 0; }
 .after{  z-index: 1; }
 
-/* máscara que “corta” la after para mostrar a la izquierda */
 .mask{
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Clip a la mitad definida por --split */
   clip-path: polygon(0 0, var(--split) 0, var(--split) 100%, 0 100%);
   background: transparent;
-  /* truco: movemos la imagen after dentro de la máscara via ::before */
 }
 .mask::before{
   content: "";
   position: absolute;
   inset: 0;
   background: center/cover no-repeat;
-  /* usamos la misma src del after con CSS variable nativa de Vue no disponible,
-     así que no podemos; por eso hacemos otro enfoque: 
-     realmente no usamos ::before, dejamos la imagen after completa y
-     en su lugar aplicamos clip-path al CONTENEDOR con mask-composite.
-     Simplifiquemos: aplicamos clip-path directamente a .after */
   display:none;
 }
-/* Simplificación: aplicamos clip-path directo al .after usando --split */
+
 .after{
   clip-path: polygon(0 0, var(--split) 0, var(--split) 100%, 0 100%);
 }
 
-/* divisor */
 .divider{
   position: absolute;
   top: 0; bottom: 0;

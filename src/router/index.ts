@@ -1,7 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import type { RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
-// Pages
 import SignIn from '../pages/SignIn.vue';
 import Register from '../pages/Register.vue';
 import DashboardLanding from '../pages/DashboardLanding.vue';
@@ -10,6 +8,7 @@ import UploadPhoto from '../pages/UploadPhoto.vue';
 import Projects from '../pages/Projects.vue';
 import Settings from '../pages/Settings.vue';
 import EditPhoto from '../pages/EditPhoto.vue';
+import { authService } from '../services/auth';
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/dashboard-landing' },
@@ -41,11 +40,10 @@ const router = createRouter({
   routes,
 });
 
-
 router.beforeEach((to, _from, next) => {
   const publicPaths = ['/signin', '/register'];
   const isPublic = publicPaths.includes(to.path);
-  const loggedIn = localStorage.getItem('loggedIn') === 'true';
+  const loggedIn = authService.isLoggedIn();
 
   if (!isPublic && !loggedIn) {
     return next('/signin');

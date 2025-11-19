@@ -5,6 +5,7 @@ import logo from '../assets/3.png';
 import iconEdit from '../assets/14.png';
 import iconProjects from '../assets/15.png';
 import iconSettings from '../assets/16.png';
+import { authService } from '../services/auth';
 
 const router = useRouter();
 
@@ -13,22 +14,20 @@ function goToLanding() {
 }
 
 function onLogout() {
-  // Aquí borrarías el token/session
-  console.log('Logging out...');
+  authService.logout();
   router.push('/signin');
 }
 </script>
 
 <template>
   <div class="dashboard-layout">
-    
     <aside class="sidebar">
       <div>
-        <img 
-          :src="logo" 
-          alt="lighted logo" 
-          class="logo" 
-          @click="goToLanding" 
+        <img
+          :src="logo"
+          alt="lighted logo"
+          class="logo"
+          @click="goToLanding"
         />
         <nav class="sidebar-nav">
           <router-link
@@ -60,16 +59,18 @@ function onLogout() {
         </nav>
       </div>
 
-      <button class="logout-btn" @click="onLogout">
+      <button
+        class="logout-btn"
+        @click="onLogout"
+        v-auth-visible="'logged-in'"
+      >
         log out
       </button>
-
     </aside>
 
     <div class="divider"></div>
 
     <router-view />
-
   </div>
 </template>
 
@@ -87,14 +88,14 @@ function onLogout() {
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Empuja el botón hacia abajo */
+  justify-content: space-between;
 }
 
 .logo {
   width: 200px;
   height: auto;
   cursor: pointer;
-  margin-bottom: 40px; /* Añadido espacio después del logo */
+  margin-bottom: 40px;
 }
 
 .sidebar-nav {
@@ -145,14 +146,14 @@ function onLogout() {
   padding: 12px 16px;
   font-size: 18px;
   font-weight: 600;
-  color: #d64545; /* Rojo pálido */
-  background-color: #fbebee; /* Rosa pálido */
+  color: #d64545;
+  background-color: #fbebee;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   text-align: center;
-  margin-top: 40px; /* Asegura espacio desde los links de nav */
+  margin-top: 40px;
 }
 
 .logout-btn:hover {
