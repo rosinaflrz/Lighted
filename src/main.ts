@@ -1,4 +1,3 @@
-declare module 'vue3-google-login';
 import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
