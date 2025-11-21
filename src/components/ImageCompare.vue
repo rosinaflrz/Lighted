@@ -15,7 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const root = ref<HTMLElement | null>(null)
-const split = ref(props.initial) 
+const split = ref(props.initial)
 let dragging = false
 
 function setSplitFromClientX(x: number) {
@@ -26,25 +26,30 @@ function setSplitFromClientX(x: number) {
   split.value = Math.min(100, Math.max(0, pct))
 }
 
-function onPointerDown(e: PointerEvent | MouseEvent | TouchEvent) {
+function onPointerDown(e: MouseEvent | TouchEvent) {
   dragging = true
-  ;(root.value as HTMLElement).classList.add('dragging')
-  if (e instanceof TouchEvent) {
+  root.value?.classList.add('dragging')
+
+  if ("touches" in e && e.touches?.[0]) {
     setSplitFromClientX(e.touches[0].clientX)
-  } else {
-    setSplitFromClientX((e as PointerEvent).clientX)
+  } else if ("clientX" in e) {
+    setSplitFromClientX(e.clientX)
   }
 }
 
 function onPointerMove(e: MouseEvent | TouchEvent) {
   if (!dragging) return
-  if (e instanceof TouchEvent) setSplitFromClientX(e.touches[0].clientX)
-  else setSplitFromClientX(e.clientX)
+
+  if ("touches" in e && e.touches?.[0]) {
+    setSplitFromClientX(e.touches[0].clientX)
+  } else if ("clientX" in e) {
+    setSplitFromClientX(e.clientX)
+  }
 }
 
 function onPointerUp() {
   dragging = false
-  ;(root.value as HTMLElement)?.classList.remove('dragging')
+  root.value?.classList.remove('dragging')
 }
 
 function onKey(e: KeyboardEvent) {
@@ -58,6 +63,7 @@ onMounted(() => {
   window.addEventListener('mouseup', onPointerUp)
   window.addEventListener('touchend', onPointerUp)
 })
+
 onBeforeUnmount(() => {
   window.removeEventListener('mousemove', onPointerMove)
   window.removeEventListener('touchmove', onPointerMove)
@@ -74,10 +80,13 @@ onBeforeUnmount(() => {
     @mousedown="onPointerDown"
     @touchstart.prevent="onPointerDown"
   >
+    <!-- BEFORE -->
     <img class="img before" :src="beforeSrc" :alt="altBefore" draggable="false" />
-    <img class="img after"  :src="afterSrc"  :alt="altAfter"  draggable="false" />
 
-    <div class="mask" aria-hidden="true" />
+    <!-- AFTER -->
+    <img class="img after" :src="afterSrc" :alt="altAfter" draggable="false" />
+
+    <div class="mask" aria-hidden="true"></div>
 
     <button
       class="divider"
@@ -86,13 +95,13 @@ onBeforeUnmount(() => {
       aria-label="Drag to compare"
       @keydown="onKey"
     >
-      <span class="handle" />
+      <span class="handle"></span>
     </button>
   </div>
 </template>
 
 <style scoped>
-.compare{
+.compare {
   position: relative;
   width: 100%;
   height: 100%;
@@ -104,56 +113,48 @@ onBeforeUnmount(() => {
   box-shadow: 0 12px 24px rgba(0,0,0,.08);
 }
 
-.img{
+.img {
   position: absolute;
   inset: 0;
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   pointer-events: none;
 }
-.before{ z-index: 0; }
-.after{  z-index: 1; }
 
-.mask{
+.before { z-index: 0; }
+.after  {
+  z-index: 1;
+  clip-path: polygon(0 0, var(--split) 0, var(--split) 100%, 0 100%);
+}
+
+.mask {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  clip-path: polygon(0 0, var(--split) 0, var(--split) 100%, 0 100%);
-  background: transparent;
-}
-.mask::before{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: center/cover no-repeat;
-  display:none;
 }
 
-.after{
-  clip-path: polygon(0 0, var(--split) 0, var(--split) 100%, 0 100%);
-}
-
-.divider{
+.divider {
   position: absolute;
-  top: 0; bottom: 0;
-  margin: 0;
+  top: 0;
+  bottom: 0;
   transform: translateX(-50%);
   width: 4px;
   background: rgba(0,0,0,.7);
   box-shadow: 0 0 0 2px rgba(255,255,255,.55);
   cursor: ew-resize;
   border: none;
-  padding: 0;
 }
-.divider:focus-visible{ outline: 2px solid #111; outline-offset: 2px; }
 
-.handle{
+.handle {
   position: absolute;
-  left: 50%; top: 50%;
+  left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
-  width: 22px; height: 22px; border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0,0,0,.2), inset 0 0 0 1px rgba(0,0,0,.12);
+  box-shadow: 0 2px 6px rgba(0,0,0,.2);
 }
-.compare.dragging .divider .handle{ transform: translate(-50%, -50%) scale(1.05); }
 </style>

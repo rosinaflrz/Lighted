@@ -1,39 +1,30 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
-
-import logo from '../assets/3.png';
-import cameraHand from '../assets/2.png';
-const bgUrl = new URL('../assets/7.png', import.meta.url).href;
-
-import image10 from '../assets/10.png';
-import image11 from '../assets/11.png';
-import image13 from '../assets/13.png';
-
+import logo from '../assets/images/3.png';
+import cameraHand from '../assets/images/2.png';
+const bgUrl = new URL('../assets/images/7.png', import.meta.url).href;
+import image10 from '../assets/images/10.png';
+import image11 from '../assets/images/11.png';
+import image13 from '../assets/images/13.png';
 import { authService } from '../services/auth';
 
 const router = useRouter();
-
 const userName = ref<string>('user');
 
-onMounted(() => {
-  const email = authService.getUserEmail();
-  if (email) {
-    userName.value = email.split('@')[0];
-  }
-});
-
+// ===== Logout =====
 function onLogout() {
   authService.logout();
   router.push('/signin');
 }
 
-// ===== Slider lógica =====
+// ===== Slider =====
 const sliderContainer = ref<HTMLDivElement | null>(null);
 const containerWidth = ref(0);
 const isDragging = ref(false);
 const handlePosition = ref(50);
 
+// Inicia drag
 function startDrag(event: MouseEvent | TouchEvent) {
   event.preventDefault();
   isDragging.value = true;
@@ -42,14 +33,25 @@ function startDrag(event: MouseEvent | TouchEvent) {
   }
 }
 
+// Drag 
 function onDrag(event: MouseEvent | TouchEvent) {
   if (!isDragging.value || !sliderContainer.value) return;
 
   const rect = sliderContainer.value.getBoundingClientRect();
-  const clientX =
-    (event as TouchEvent).touches && (event as TouchEvent).touches.length
-      ? (event as TouchEvent).touches[0].clientX
-      : (event as MouseEvent).clientX;
+  let clientX: number;
+
+  // ---- TOUCH ----
+  if ('touches' in event && event.touches && event.touches.length > 0) {
+    const firstTouch = event.touches[0];
+    if (!firstTouch) return;
+    clientX = firstTouch.clientX;
+  }
+  // ---- MOUSE ----
+  else if ('clientX' in event) {
+    clientX = (event as MouseEvent).clientX;
+  } else {
+    return;
+  }
 
   let newX = ((clientX - rect.left) / rect.width) * 100;
   if (newX < 0) newX = 0;
@@ -61,7 +63,18 @@ function stopDrag() {
   isDragging.value = false;
 }
 
+function onResize() {
+  if (sliderContainer.value) {
+    containerWidth.value = sliderContainer.value.offsetWidth;
+  }
+}
+
 onMounted(() => {
+  const rawEmail = authService.getUserEmail();          // string | undefined
+  const email: string = rawEmail ?? 'user@example.com'; // ya es string
+  userName.value = email.split('@')[0] || 'user';
+
+  // ========= Slider =========
   if (sliderContainer.value) {
     containerWidth.value = sliderContainer.value.offsetWidth;
   }
@@ -70,6 +83,7 @@ onMounted(() => {
   window.addEventListener('touchmove', onDrag);
   window.addEventListener('mouseup', stopDrag);
   window.addEventListener('touchend', stopDrag);
+  window.addEventListener('resize', onResize);
 });
 
 onUnmounted(() => {
@@ -77,6 +91,7 @@ onUnmounted(() => {
   window.removeEventListener('touchmove', onDrag);
   window.removeEventListener('mouseup', stopDrag);
   window.removeEventListener('touchend', stopDrag);
+  window.removeEventListener('resize', onResize);
 });
 </script>
 
@@ -84,12 +99,23 @@ onUnmounted(() => {
   <div class="page" :style="{ backgroundImage: `url(${bgUrl})` }">
     <div class="grid-overlay"></div>
 
+    <!-- Logo -->
     <img class="logo" :src="logo" alt="lighted" />
 
+    <!-- Botón power (logout) -->
+    <button class="power-btn" @click="onLogout" aria-label="log out">
+      <svg class="power-icon" viewBox="0 0 24 24">
+        <path d="M12 3v6" />
+        <path d="M7.757 6.343a6 6 0 1 0 8.486 0" />
+      </svg>
+    </button>
+
+    <!-- Bienvenida -->
     <h2 class="welcome">
       welcome back <span class="name">{{ userName }}</span>
     </h2>
 
+    <!-- Botones de navegación -->
     <div class="nav-buttons">
       <button class="nav-btn" @click="router.push('/dashboard/edit')">
         upload a photo
@@ -102,23 +128,21 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <button class="power-btn" @click="onLogout" aria-label="log out">
-      <svg class="power-icon" viewBox="0 0 24 24">
-        <path d="M12 3v6" />
-        <path d="M7.757 6.343a6 6 0 1 0 8.486 0" />
-      </svg>
-    </button>
-
+    <!-- Mano con cámara -->
     <img class="camera-hand" :src="cameraHand" alt="Hand holding a camera" />
 
+    <!-- Título principal -->
     <h1 class="main-title">
       Edita tus <span class="main-title-highlight">fotos</span> en segundos
     </h1>
 
+    <!-- Tarjeta de fondo -->
     <div class="orange-card" aria-hidden="true"></div>
 
+    <!-- Skydiver -->
     <img class="skydiver-image" :src="image10" alt="Skydiver" />
 
+    <!-- Slider de comparación -->
     <div
       ref="sliderContainer"
       class="comparison-slider"
@@ -126,11 +150,7 @@ onUnmounted(() => {
       @touchstart.prevent="startDrag"
     >
       <img class="slider-image-before" :src="image11" alt="Antes" />
-
-      <div
-        class="slider-image-after-wrapper"
-        :style="{ width: handlePosition + '%' }"
-      >
+      <div class="slider-image-after-wrapper" :style="{ width: handlePosition + '%' }">
         <img
           class="slider-image-after"
           :src="image13"
@@ -138,7 +158,6 @@ onUnmounted(() => {
           :style="{ width: containerWidth + 'px' }"
         />
       </div>
-
       <div class="slider-handle" :style="{ left: handlePosition + '%' }">
         <div class="slider-handle-line"></div>
         <div class="slider-handle-circle"></div>
@@ -147,356 +166,5 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style scoped>
-:global(:root) {
-  --grid: 80px;
-}
 
-.page {
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-  background-color: #f7f0f6;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 2560px 1440px;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-.grid-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  background-image: repeating-linear-gradient(
-      to bottom,
-      rgba(255, 0, 0, 0.25) 0,
-      rgba(255, 0, 0, 0.25) 1px,
-      transparent 1px,
-      transparent var(--grid)
-    ),
-    repeating-linear-gradient(
-      to right,
-      rgba(255, 0, 0, 0.25) 0,
-      rgba(255, 0, 0, 0.25) 1px,
-      transparent 1px,
-      transparent var(--grid)
-    );
-  display: none;
-}
-
-/* Logo */
-.logo {
-  position: absolute;
-  top: -10px;
-  left: 80px;
-  width: 340px;
-  height: auto;
-  user-select: none;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Welcome */
-.welcome {
-  position: absolute;
-  top: 250px;
-  left: 105px;
-  margin: 0;
-  font-size: 48px;
-  font-weight: 800;
-  color: #374151;
-  user-select: none;
-  z-index: 2;
-}
-.name {
-  color: #5da87a;
-}
-
-/* Power button */
-.power-btn {
-  position: absolute;
-  top: 85px;
-  right: 79px;
-  width: 70px;
-  height: 70px;
-  border-radius: 999px;
-  border: none;
-  outline: none;
-  background: #d9b3b3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition:
-    background 0.25s ease,
-    transform 0.18s ease,
-    box-shadow 0.25s ease;
-  box-shadow: none;
-  z-index: 2;
-}
-.power-btn:hover {
-  background: #d64545;
-  transform: translateY(-1.5px);
-  box-shadow:
-    0 0 20px rgba(214, 69, 69, 0.55),
-    0 0 80px rgba(214, 69, 69, 0.35),
-    0 0 140px rgba(214, 69, 69, 0.25);
-}
-.power-btn:active {
-  transform: scale(0.96);
-}
-.power-icon {
-  width: 50px;
-  height: 50px;
-  color: #3a3a3a;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  transition: color 0.25s ease;
-}
-.power-btn:hover .power-icon {
-  color: #fff;
-}
-
-/* Nav buttons */
-.nav-buttons {
-  position: absolute;
-  top: 305px;
-  right: 152px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.nav-btn {
-  padding: 10px 20px;
-  background: #e5e7eb;
-  color: #374151;
-  border: none;
-  outline: none;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-.nav-btn:hover {
-  background: #5da87a;
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-/* Camera hand */
-.camera-hand {
-  position: absolute;
-  top: 370px;
-  left: -50px;
-  width: 550px;
-  height: auto;
-  user-select: none;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Title */
-.main-title {
-  position: absolute;
-  top: 380px;
-  left: 500px;
-  margin: 0;
-  font-size: 44px;
-  font-weight: 800;
-  color: #374151;
-  user-select: none;
-  z-index: 2;
-  line-height: 1.2;
-}
-.main-title-highlight {
-  color: #ef8b66;
-}
-
-/* Orange card */
-.orange-card {
-  position: absolute;
-  top: 355px;
-  left: 160px;
-  right: 152px;
-  height: 400px;
-  border-radius: 28px;
-  background: linear-gradient(180deg, #f2dfd2, #f5e7dc);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
-  z-index: 1;
-}
-
-/* Skydiver */
-.skydiver-image {
-  position: absolute;
-  z-index: 2;
-  top: 480px;
-  right: 60px;
-  width: 550px;
-  height: auto;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* Slider */
-.comparison-slider {
-  position: absolute;
-  z-index: 2;
-  top: 480px;
-  left: 480px;
-  width: 400px;
-  border-radius: 0;
-  overflow: hidden;
-  user-select: none;
-  cursor: ew-resize;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.slider-image-before {
-  display: block;
-  width: 100%;
-  height: auto;
-  pointer-events: none;
-}
-.slider-image-after-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none;
-}
-.slider-image-after {
-  display: block;
-  height: 100%;
-  max-width: none;
-  pointer-events: none;
-}
-.slider-handle {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 4px;
-  pointer-events: none;
-}
-.slider-handle-line {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-}
-.slider-handle-circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsivo */
-@media (min-width: 981px) and (max-width: 1200px) {
-  .camera-hand {
-    top: 400px;
-    left: -80px;
-    width: 480px;
-  }
-  .main-title {
-    top: 380px;
-    left: auto;
-    right: 200px;
-    font-size: 40px;
-  }
-  .nav-buttons {
-    right: 170px;
-  }
-  .skydiver-image {
-    top: 460px;
-    right: 170px;
-    width: 250px;
-  }
-  .comparison-slider {
-    top: 460px;
-    left: 450px;
-    width: 250px;
-  }
-}
-
-@media (max-width: 980px) {
-  .power-btn {
-    top: 24px;
-    right: 24px;
-    width: 60px;
-    height: 60px;
-  }
-  .power-icon {
-    width: 34px;
-    height: 34px;
-  }
-  .logo {
-    width: 240px;
-    left: 24px;
-    top: 16px;
-  }
-  .welcome {
-    left: 24px;
-    top: 140px;
-    font-size: 36px;
-  }
-  .nav-buttons {
-    top: 180px;
-    right: 16px;
-    gap: 8px;
-  }
-  .nav-btn {
-    padding: 8px 14px;
-    font-size: 14px;
-  }
-  .orange-card {
-    top: 220px;
-    left: 16px;
-    right: 16px;
-    height: auto;
-    bottom: 24px;
-  }
-  .camera-hand {
-    top: 250px;
-    left: -20px;
-    width: 280px;
-  }
-  .main-title {
-    top: 244px;
-    left: auto;
-    right: 24px;
-    font-size: 32px;
-    max-width: 55%;
-    text-align: right;
-  }
-  .skydiver-image {
-    top: 450px;
-    right: 24px;
-    width: 45%;
-  }
-  .comparison-slider {
-    top: 450px;
-    left: 24px;
-    width: 45%;
-  }
-}
-</style>
+<style scoped src="@/assets/css/dashboardLanding.css"></style>
