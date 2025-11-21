@@ -33,3 +33,10 @@ coverage
 
 # Vitest
 __screenshots__/
+
+# env files
+.env
+backend/.env
+frontend/.env
+*.env
+*.env.*
