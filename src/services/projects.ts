@@ -24,7 +24,6 @@ function buildAuthHeaders(): HeadersInit {
   return headers;
 }
 
-// Obtener todos
 export async function fetchProjects(): Promise<Project[]> {
   const res = await fetch(`${API_BASE_URL}/projects`, {
     method: 'GET',
@@ -52,7 +51,6 @@ export async function fetchProjectById(id: number | string): Promise<Project> {
   return await res.json();
 }
 
-// Crear nuevo
 export async function createProject(
   title: string,
   thumbnailUrl: string | null
@@ -72,7 +70,6 @@ export async function createProject(
   return data as Project;
 }
 
-// Actualizar existente (name e imagen)
 export async function updateProject(
   id: number | string, 
   title: string,
@@ -95,7 +92,6 @@ export async function updateProject(
   return res.json();
 }
 
-// Eliminar
 export async function deleteProject(id: number | string) {
   const res = await fetch(`${API_BASE_URL}/projects/${id}`, {
     method: 'DELETE',
@@ -108,7 +104,8 @@ export async function deleteProject(id: number | string) {
   return res.json();
 }
 
-// Helper para compatibilidad si solo cambias el título
 export async function updateProjectTitle(id: number | string, newTitle: string) {
   return updateProject(id, newTitle);
 }
+
+export const getAllProjects = fetchProjects;

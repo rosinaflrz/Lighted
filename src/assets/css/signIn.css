@@ -187,3 +187,24 @@ h1 {
   width: 100%;
   margin-bottom: 10px;
 }
+
+
+input.input-error {
+  border: 1px solid #ef4444 !important; /* Borde rojo */
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Estilo para el texto pequeño de error debajo del input */
+.field-error-msg {
+  display: block;
+  color: #ef4444; /* Rojo */
+  font-size: 0.8rem;
+  margin-top: 4px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.field-group {
+  width: 100%;
+  margin-bottom: 1rem;
+}
