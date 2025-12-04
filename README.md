@@ -39,4 +39,11 @@ npm run build
 ```
 
 
-Para correr las pruebas unitarias ejecuta: npm run test" "Para correr las pruebas E2E ejecuta: npm run test:e2e
+Para correr las pruebas unitarias ejecuta: 
+```sh
+npm run test" 
+```
+Para correr las pruebas E2E ejecuta: 
+```sh
+npm run test:e2e
+```
