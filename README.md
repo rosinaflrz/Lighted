@@ -37,3 +37,6 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+Para correr las pruebas unitarias ejecuta: npm run test" "Para correr las pruebas E2E ejecuta: npm run test:e2e
