@@ -410,9 +410,9 @@ function applyRetouchEffect(x: number, y: number) {
         : 1 - strength * 0.5;
 
     for (let i = 0; i < pixels.length; i += 4) {
-      pixels[i] = Math.min(255, Math.max(0, pixels[i] * adjust));
-      pixels[i + 1] = Math.min(255, Math.max(0, pixels[i + 1] * adjust));
-      pixels[i + 2] = Math.min(255, Math.max(0, pixels[i + 2] * adjust));
+      pixels[i] = Math.min(255, Math.max(0, pixels[i]! * adjust));
+      pixels[i + 1] = Math.min(255, Math.max(0, pixels[i + 1]! * adjust));
+      pixels[i + 2] = Math.min(255, Math.max(0, pixels[i + 2]! * adjust));
     }
     retouchTempCtx.putImageData(imageData, 0, 0);
   }
